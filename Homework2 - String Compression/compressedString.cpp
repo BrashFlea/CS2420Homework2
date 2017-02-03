@@ -25,7 +25,12 @@ CompressedString::CompressedString(const char* str){
 		str++;
 	}
 
-	char* tempCompressedString = new char[uLength]; //create array to store values
+	char* tempCompressedString = new char[uLength + 1]; //create array to store values
+
+	for (int i = 0; i < uLength + 1; i++) {
+		*(tempCompressedString + i) = '0';
+	}
+
 
 	//Reset the pointer to original position
 	//Note: i resets to zero in this step
@@ -40,7 +45,7 @@ CompressedString::CompressedString(const char* str){
 		nextLetter = *(str + (i + 1));
 		if (nextLetter == NULL) {
 			if (count == 1) {
-				*(tempCompressedString + pos) = currentLetter;
+				*(tempCompressedString + pos) = currentLetter; //save the last letter
 				*(tempCompressedString + (pos + 1)) = '\0'; //null terminate
 			}
 			else {
@@ -78,28 +83,84 @@ CompressedString::CompressedString(const char* str){
 	//Reset the pointer to original position
 	tempCompressedString -= cLength;
 
-	CompressedString::compressedString = tempCompressedString;
-	CompressedString::unCompLength = uLength; //uncompressed length
-	CompressedString::compLength = cLength; //compressed length
+	this->compressedString = tempCompressedString;
+	this->unCompLength = uLength; //uncompressed length
+	this->compLength = cLength; //compressed length
+
 }
 
 CompressedString::CompressedString(const CompressedString& other){
 
+	compressedString = other.compressedString;
+	this->compLength = other.compLength;
+	this->unCompLength = other.unCompLength;
 }
 
 CompressedString::~CompressedString(){
+	compressedString = NULL;
 
 }
 
 void CompressedString::operator=(const CompressedString& other){
 
+	char* newCompressedString = new char[other.compLength + 1]; //create array to store values
+
+	for (int i = 0; i < other.compLength; i++) {
+		*(newCompressedString + i) = *(other.compressedString + i);
+
+	}
+	*(newCompressedString + other.compLength) = '\0';
+
+	compressedString = other.compressedString;
+	this->compLength = other.compLength;
+	this->unCompLength = other.unCompLength;
+
+	//delete[] newCompressedString;
+	newCompressedString = NULL;
+
 }
 
 void CompressedString::operator+=(const CompressedString& other){
 
+	int newLength = compLength + other.compLength;
+	char* newCompressedString = new char[newLength + 1]; //create array to store values
+	int j = 0;
+	//Initalize array to zeroes
+	for (int i = 0; i < newLength + 1; i++) {
+		*(newCompressedString + i) = '0';
+	}
+	//First compressed string
+	for (int i = 0; i < compLength; i++) {
+		*(newCompressedString + i) = *(compressedString + i);
+	}
+	//Second compressed string
+	for (int i = (newLength - compLength); i < newLength; i++) {
+		*(newCompressedString + i) = *(other.compressedString + j);
+		j++;
+	}
+	//Append null terminator
+	*(newCompressedString + newLength) = '\0';
+
+	compressedString = newCompressedString;
+	this->compLength = newLength;
+	this->unCompLength = unCompLength + other.unCompLength;
+	newCompressedString = NULL;
+
 }
 
 void CompressedString::operator+=(const char* str){
+
+	int length = 0;
+	int i = 0;
+
+	//determine length
+	while (*str != NULL) {
+		length++;
+		i++;
+		str++;
+	}
+
+
 
 }
 
