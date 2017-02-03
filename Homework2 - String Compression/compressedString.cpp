@@ -11,9 +11,10 @@ CompressedString::CompressedString(){
 
 CompressedString::CompressedString(const char* str){
 	int i = 0; //for iteration
-	int uLength = 1; //length of uncompressed string
-	int cLength = 1; //length of compressed string
-	int count = 0; //of occurences
+	int pos = 0;
+	int uLength = 0; //length of uncompressed string
+	int cLength = 0; //length of compressed string
+	int count = 1; //of occurences
 	char currentLetter = ' ';
 	char nextLetter = ' ';
 	
@@ -38,19 +39,46 @@ CompressedString::CompressedString(const char* str){
 		currentLetter = *(str + i);
 		nextLetter = *(str + (i + 1));
 		if (nextLetter == NULL) {
+			if (count == 1) {
+				*(tempCompressedString + pos) = currentLetter;
+				*(tempCompressedString + (pos + 1)) = '\0'; //null terminate
+			}
+			else {
+				*(tempCompressedString + (pos + 1)) = (count + '0'); //Conversion to char
+				*(tempCompressedString + (pos + 2)) = '\0'; //null terminate
+			}		
 			break;
 		}
 		if (currentLetter == nextLetter){
-			*(tempCompressedString + i) = currentLetter;
+			*(tempCompressedString + pos) = currentLetter;
 			count++;
 		}
 		else if (currentLetter != nextLetter) {
-			*(tempCompressedString + (i+1)) = (count + '0'); //Conversion to char
+			if (count == 1) {
+				*(tempCompressedString + pos) = currentLetter;
+				pos += 1; //skip ahead and don't record count
+				count = 1; //reset count 
+			}
+			else {
+				*(tempCompressedString + (pos + 1)) = (count + '0'); //Conversion to char
+				pos += 2;
+				count = 1; //reset count 
+			}
+			
 		}
 		
 	}
 
-	//CompressedString::compressedString = tempCompressedString;
+	//Determine length of compressed string
+	while (*tempCompressedString != NULL) {
+		cLength++;
+		tempCompressedString++;
+	}
+
+	//Reset the pointer to original position
+	tempCompressedString -= cLength;
+
+	CompressedString::compressedString = tempCompressedString;
 	CompressedString::unCompLength = uLength; //uncompressed length
 	CompressedString::compLength = cLength; //compressed length
 }
