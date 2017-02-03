@@ -125,6 +125,7 @@ void CompressedString::operator+=(const CompressedString& other){
 	int newLength = compLength + other.compLength;
 	char* newCompressedString = new char[newLength + 1]; //create array to store values
 	int j = 0;
+	int pos = (newLength - compLength);
 	//Initalize array to zeroes
 	for (int i = 0; i < newLength + 1; i++) {
 		*(newCompressedString + i) = '0';
@@ -133,14 +134,26 @@ void CompressedString::operator+=(const CompressedString& other){
 	for (int i = 0; i < compLength; i++) {
 		*(newCompressedString + i) = *(compressedString + i);
 	}
+
+	//Concatenation check
+	if (*(newCompressedString + (compLength - 2)) == *(other.compressedString)) {
+		*(newCompressedString + (compLength -1)) += (*(other.compressedString + 1) - '0'); //Take the number and add it to the count
+		newLength -= 2;
+		j += 2;
+	}
+	else if (*(newCompressedString + (compLength - 1)) == *(other.compressedString)) {
+		//Single character check
+	}
+
 	//Second compressed string
-	for (int i = (newLength - compLength); i < newLength; i++) {
+	for (int i = pos; i < newLength; i++) {
 		*(newCompressedString + i) = *(other.compressedString + j);
 		j++;
 	}
 	//Append null terminator
 	*(newCompressedString + newLength) = '\0';
 
+	//Construct new CompressedString
 	compressedString = newCompressedString;
 	this->compLength = newLength;
 	this->unCompLength = unCompLength + other.unCompLength;
