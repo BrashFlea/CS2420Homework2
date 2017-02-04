@@ -262,6 +262,11 @@ double CompressedString::compressionRatio() const{
 }
 
 ostream& operator<<(ostream& outs, const CompressedString& source){
+	int i = 0;
+	while (*(source.compressedString + i) != NULL) {
+		outs << *(source.compressedString + i);
+		i++;
+	}
    return outs;
 }
 
