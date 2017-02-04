@@ -173,8 +173,6 @@ void CompressedString::operator+=(const char* str){
 		str++;
 	}
 
-
-
 }
 
 CompressedString CompressedString::operator+(const CompressedString& other) const{
