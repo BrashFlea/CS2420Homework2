@@ -26,7 +26,7 @@ class CompressedString{
 
 	private:
 		char* compressedString;
-		int unCompLength =1 ; //uncompressed length
+		int unCompLength = 1 ; //uncompressed length
 		int compLength = 1; //compressed length
 
 };

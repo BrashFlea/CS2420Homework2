@@ -166,12 +166,74 @@ void CompressedString::operator+=(const char* str){
 	int length = 0;
 	int i = 0;
 
-	//determine length
+	//Determine length
 	while (*str != NULL) {
 		length++;
 		i++;
 		str++;
 	}
+
+	//Reset the pointer to original position
+	//Note: i resets to zero in this step
+	while (i > 0) {
+		i--;
+		str--;
+	}
+
+	int j = 0;
+	int count = 0;
+	int occurance = 1;
+	int newLength = compLength + length;
+	int pos = (newLength - compLength);
+
+	char* newCompressedString = new char[newLength + 1]; //create array to store values
+
+	//Initalize array to zeroes
+	for (int i = 0; i < newLength + 1; i++) {
+		*(newCompressedString + i) = '0';
+	}
+
+	//First compressed string
+	for (int i = 0; i < compLength; i++) {
+		*(newCompressedString + i) = *(compressedString + i);
+	}
+
+	//Concatenation check
+	if (*(newCompressedString + (compLength - 2)) == *(str)) {
+		*(newCompressedString + (compLength - 1)) += (*(str + 1) - '0'); //Take the number and add it to the count
+		newLength -= 2;
+		j += 2;
+	}
+	//Single character check
+	else if (*(newCompressedString + (compLength - 1)) == *(str)) {
+		while (*(newCompressedString + (compLength - 1)) == *(str + count)) {
+			count++;
+		}
+		*(newCompressedString + (compLength)) = ((count + 1) + '0'); //Convert and add the count
+		newLength -= count;
+		j += count;
+		pos--;
+	}
+
+	//Second string compression
+	for (int i = pos; i <= newLength; i++) {
+		if (*(str + j) != *(str + j + 1)) {
+		*(newCompressedString + (i - 1)) = (occurance + '0');
+		}
+		else if (*(str + j) == *(str + j + 1)) {
+			*(newCompressedString + pos) = *(str + j);
+			occurance += 1;
+			j++;
+		}
+	}
+	//Append null terminator
+	*(newCompressedString + newLength) = '\0';
+
+	//Construct new CompressedString
+	compressedString = newCompressedString;
+	this->compLength = newLength;
+	//this->unCompLength = unCompLength + other.unCompLength;
+	newCompressedString = NULL;
 
 }
 
@@ -195,8 +257,8 @@ int CompressedString::originalLength() const{
 }
 
 double CompressedString::compressionRatio() const{
-   //return (compLength / unCompLength);
-	return 0;
+	double compressionRatio = double(compLength) / double(unCompLength);
+    return compressionRatio;
 }
 
 ostream& operator<<(ostream& outs, const CompressedString& source){
