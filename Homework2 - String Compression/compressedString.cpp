@@ -1,4 +1,5 @@
 #include "compressedString.h"
+#include <ctype.h> // for isdigit function
 
 using std::ostream;
 
@@ -39,6 +40,7 @@ CompressedString::CompressedString(const char* str){
 		str--;
 	}
 
+	
 	//Begin compression
 	for (i; i < uLength; i++) {
 		currentLetter = *(str + i);
@@ -232,7 +234,7 @@ void CompressedString::operator+=(const char* str){
 	//Construct new CompressedString
 	compressedString = newCompressedString;
 	this->compLength = newLength;
-	//this->unCompLength = unCompLength + other.unCompLength;
+	this->unCompLength = unCompLength + length;
 	newCompressedString = NULL;
 
 }
@@ -242,10 +244,74 @@ CompressedString CompressedString::operator+(const CompressedString& other) cons
 }
 
 CompressedString CompressedString::reverse() const{
-   return CompressedString("");
+
+	char* reversedString = new char[compLength]; //create array to store values
+	int halfway = (compLength / 2);
+	char currentChar = ' ';
+	int nextChar = ' ';
+
+	for (int i = 0; i < compLength; i++) {
+		currentChar = *(this->compressedString + i);
+		nextChar = *(this->compressedString + (i + 1));
+		//Swap pairs
+		if (isdigit(nextChar) != 0) {
+			*(reversedString + i) = *(this->compressedString + (compLength - i - 2));
+			i++;
+			*(reversedString + i) = *(this->compressedString + (compLength - i));
+		}
+		//Swap single letter
+		else if (isdigit(nextChar) == 0) {
+		}
+
+		
+	}
+	//Null terminate
+	*(reversedString + compLength) = '\0';
+   return CompressedString(reversedString);
 }
 
 void CompressedString::decompress(char* str, int size) const{
+	int i = 0; //for iteration
+	int pos = 0;
+	int count = 1; //of occurences
+	char* tempDecompressedString = new char[size]; //create array to store values
+
+	for (i; i < size; i++) {
+		char currentLetter = *(this->compressedString + i);
+		char nextLetter = *(this->compressedString + (i + 1));
+		if (nextLetter == '\0' || currentLetter == '\0') {
+			break;
+		}
+		if (isdigit((nextLetter)) != 0) {
+			for (int j = 0; j < (nextLetter - '0'); j++) {
+				*(tempDecompressedString + pos) = currentLetter;
+				pos++;
+			}
+			i++;
+		}
+		else {
+			*(tempDecompressedString + pos) = currentLetter;
+			pos++;
+		}
+	}
+	//Null terminate
+	*(tempDecompressedString + pos) = '\0';
+
+	for (int i = 0; i < size; i++) {
+		int alphaCheck = isalpha(*(tempDecompressedString + i));
+		int numCheck = isdigit(*(tempDecompressedString + i));
+		if (alphaCheck == 0 && numCheck == 0) {
+			*(str + i) = '\0';
+			break;
+		}
+		*(str + i) = *(tempDecompressedString + i);
+	}
+	tempDecompressedString = NULL;
+
+
+	
+
+
 }
 
 int CompressedString::length() const{
