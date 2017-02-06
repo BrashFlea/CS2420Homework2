@@ -1,5 +1,5 @@
 #include "compressedString.h"
-#include <ctype.h> // for isdigit function
+#include <ctype.h> // for isdigit & isalpha functions
 
 using std::ostream;
 
@@ -32,7 +32,6 @@ CompressedString::CompressedString(const char* str){
 		*(tempCompressedString + i) = '0';
 	}
 
-
 	//Reset the pointer to original position
 	//Note: i resets to zero in this step
 	while (i > 0) {
@@ -40,7 +39,6 @@ CompressedString::CompressedString(const char* str){
 		str--;
 	}
 
-	
 	//Begin compression
 	for (i; i < uLength; i++) {
 		currentLetter = *(str + i);
@@ -92,10 +90,10 @@ CompressedString::CompressedString(const char* str){
 }
 
 CompressedString::CompressedString(const CompressedString& other){
-
 	compressedString = other.compressedString;
 	this->compLength = other.compLength;
 	this->unCompLength = other.unCompLength;
+
 }
 
 CompressedString::~CompressedString(){
@@ -104,7 +102,6 @@ CompressedString::~CompressedString(){
 }
 
 void CompressedString::operator=(const CompressedString& other){
-
 	char* newCompressedString = new char[other.compLength + 1]; //create array to store values
 
 	for (int i = 0; i < other.compLength; i++) {
@@ -123,7 +120,6 @@ void CompressedString::operator=(const CompressedString& other){
 }
 
 void CompressedString::operator+=(const CompressedString& other){
-
 	int newLength = compLength + other.compLength;
 	char* newCompressedString = new char[newLength + 1]; //create array to store values
 	int j = 0;
@@ -164,7 +160,6 @@ void CompressedString::operator+=(const CompressedString& other){
 }
 
 void CompressedString::operator+=(const char* str){
-
 	int length = 0;
 	int i = 0;
 
@@ -240,11 +235,31 @@ void CompressedString::operator+=(const char* str){
 }
 
 CompressedString CompressedString::operator+(const CompressedString& other) const{
-   return CompressedString("");
+	/*int length = this->compLength + other.compLength;
+	int i = this->compLength;
+	int j = 0;
+	char* newCompressedString = new char[length]; //create array to store values
+	newCompressedString = this->compressedString;
+
+	if (*(newCompressedString + i - 2) == *(other.compressedString)) {
+		*(newCompressedString + i - 1) += 1;
+		j++;
+	}
+
+
+	for (i; i < length; i++) {
+		*(newCompressedString + i) = *(other.compressedString + j);
+		j++;
+	}
+	//Null terminate
+	*(newCompressedString + length) = '\0';
+
+	
+   return CompressedString(newCompressedString);*/
+	return CompressedString("");
 }
 
 CompressedString CompressedString::reverse() const{
-
 	char* reversedString = new char[compLength]; //create array to store values
 	int halfway = (compLength / 2);
 	char currentChar = ' ';
@@ -263,11 +278,11 @@ CompressedString CompressedString::reverse() const{
 		else if (isdigit(nextChar) == 0) {
 		}
 
-		
 	}
 	//Null terminate
 	*(reversedString + compLength) = '\0';
    return CompressedString(reversedString);
+
 }
 
 void CompressedString::decompress(char* str, int size) const{
@@ -297,6 +312,11 @@ void CompressedString::decompress(char* str, int size) const{
 	//Null terminate
 	*(tempDecompressedString + pos) = '\0';
 
+	//Buffer size check
+	if (size -1 != unCompLength) {
+		size -= 1;
+	}
+
 	for (int i = 0; i < size; i++) {
 		int alphaCheck = isalpha(*(tempDecompressedString + i));
 		int numCheck = isdigit(*(tempDecompressedString + i));
@@ -307,24 +327,23 @@ void CompressedString::decompress(char* str, int size) const{
 		*(str + i) = *(tempDecompressedString + i);
 	}
 	tempDecompressedString = NULL;
-
-
 	
-
-
 }
 
 int CompressedString::length() const{
    return compLength;
+
 }
 
 int CompressedString::originalLength() const{
    return unCompLength;
+
 }
 
 double CompressedString::compressionRatio() const{
 	double compressionRatio = double(compLength) / double(unCompLength);
     return compressionRatio;
+
 }
 
 ostream& operator<<(ostream& outs, const CompressedString& source){
@@ -334,5 +353,6 @@ ostream& operator<<(ostream& outs, const CompressedString& source){
 		i++;
 	}
    return outs;
+
 }
 
